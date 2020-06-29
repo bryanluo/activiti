@@ -1,0 +1,17 @@
+server:
+  port: 8080
+# \u6570\u636E\u6E90\u914D\u7F6E
+spring:
+  datasource:
+    username: root
+    password: server@123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://myserver:3306/activities?useUnicode=true&characterEncoding=utf-8&useSSL=false
+  activiti:
+    database-schema: activities
+    # \u542F\u52A8\u65F6\u68C0\u67E5\u6570\u636E\u5E93\u8868\uFF0C \u4E0D\u5B58\u5728\u5219\u521B\u5EFA
+    database-schema-update: true
+    # \u4EC0\u4E48\u60C5\u51B5\u4E0B\u4F7F\u7528\u5386\u53F2\u8868\uFF0C full\u8868\u793A\u5168\u90E8\u8BB0\u5F55\u5386\u53F2
+    history-level: full
+    # \u4F7F\u7528\u5386\u53F2\u8868\uFF0C \u4E0D\u4E3Atrue \u5386\u53F2\u8868\u5C06\u4E0D\u4F1A\u88AB\u521B\u5EFA
+    db-history-used: true

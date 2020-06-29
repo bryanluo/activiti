@@ -100,6 +100,67 @@ Activity 只会在流程实例执行过程中保存这些数据， 流程结束�
 * ACT_GE_*: 通用数据， 用于不同场景下。
 
 
-数据库升级
+API
 ---
 
+| 服务名 | 作用 |
+| --- | --- |
+| RepositoryService | 流程图的部署、修改、删除 |
+| RuntimeService | 流程的运行 |
+| TaskService | 流程相关任务 |
+| HistoryService | 查询历史记录 |
+| FormService | 页面表单的服务器 |
+| IdentityService | 对工作流的用户管理表操作 |
+| ManagerService | 管理器 |
+
+## 主要类
+
+ProcessDefinition 
+---
+
+操作表： act_re_procdef
+
+流程定义类. 可以从这里获得资源文件等。 当流程图被部署之后， 查询出来的数据就是流程定义的数据
+
+ProcessInstance
+---
+
+代表流程定义的执行实例。 例如小明请了一天的假，他就必须发出一个流程实例的申请。 一个流程实例包括
+了所有的运行节点。 我们可以利用这个对象来了解当前流程实例的进度等信息。 流程实例就表示一个流程从
+开始到结束的最大流程分支， 即一个流程中实例只有一个。
+
+Execution
+---
+
+Activities 用这个对象去描述流程执行的每一个节点。 在没有并发的情况下， Execution 就是同 ProcessInstance
+流程按照流程定义的规则执行的一次的过程， 就可以表示执行对象Execution。
+
+
+重要SQL
+---
+
+```sql
+
+# RepositoryService
+
+select * from ACT_GE_BYTEARRAY; # 二进制文件表
+select * from ACT_RE_DEPLOYMENT; # 流程部署表
+select * from ACT_RE_PROCDEF; # 流程定义
+select * from ACT_GE_PROPERTY; # 工作流的ID算法和版本信息表
+
+# RuntimeService
+
+select * from ACT_RU_EXECUTION; # 流程启动一次只要没有执行完， 就会有一条数据
+select * from ACT_RU_TASK; # 可能有多条数据
+select * from ACT_RU_VARIABLE; # 记录流程运行时的流程变量
+select * from ACT_RU_IDENTITYLINK; # 存放流程办理人的信息
+
+# historyService
+select * from ACT_HI_PROCINST; # 历史流程实例
+select * from ACT_HI_TASKINST; # 历史任务实例
+select * from ACT_HI_ACTINST; #历史活动节点表
+select * from ACT_HI_VARINST; # 历史流程变量表
+select * from ACT_HI_IDENTITYLINK; # 历史办理人表
+select * from ACT_HI_COMMENT; # 批注表
+select * from ACT_HI_ATTACHMENT; # 附件表
+```

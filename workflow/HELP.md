@@ -164,3 +164,102 @@ select * from ACT_HI_IDENTITYLINK; # 历史办理人表
 select * from ACT_HI_COMMENT; # 批注表
 select * from ACT_HI_ATTACHMENT; # 附件表
 ```
+
+管理流程定义
+---
+
+功能： 对流程的增加、修改、删除、查询  
+主要操作的表：ACT_GE_BYTEARRAY、ACT_RE_DEPLOYMENT、ACT_RE_PROCDEF
+
+部署流程有两种方式：
+---
+
+classPath：
+```
+ RepositoryService repositoryService = this.processEngine.getRepositoryService();
+ Deployment deployment = repositoryService.createDeployment().name("请假流程001")
+                        .addClasspathResource("activiti/helloworld.bpmn")
+                        .addClasspathResource("activiti/helloworld.png")
+                        .deploy();
+```
+
+zip：
+```
+InputStream inputStream = this.getClass().getResourceAsStream("activiti/helloworld.zip");
+        ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+        RepositoryService repositoryService = this.processEngine.getRepositoryService();
+        Deployment deployment = repositoryService
+                .createDeployment()
+                .name("请假流程002")
+                .addZipInputStream(zipInputStream)
+                .deploy();
+
+```
+
+查询：
+---
+
+```
+RepositoryService repositoryService = this.processEngine.getRepositoryService();
+// 创建部署信息的查询
+repositoryService
+        .createDeploymentQuery()
+        // 条件
+        //.deploymentId() 根据部署ID查询
+        //.deploymentName() 根据部署名称查询
+        //.deploymentTenantId() 根据tenantId 查询
+        //.deploymentNameLike() 根据名称模糊查询
+
+        // 排序
+        //.orderByDeploymentId().asc() 根据部署id升序
+        //.orderByDeploymenTime().desc() 根据部署事件降序
+        
+        // 结果集
+        //.singleResult()
+        //.count()
+        
+        //.listPage()
+.list();
+```
+
+流程定义删除:
+---
+
+```
+String deploymentId = "";
+RepositoryService repositoryService = this.processEngine.getRepositoryService();
+// 如果该流程定义已经启动，则删除失败，会抛出异常
+repositoryService.deleteDeployment(deploymentId);
+// 无论流程启动没有，都会将流程删除
+repositoryService.deleteDeployment(deploymentId, true);
+```
+
+
+修改流程定义：
+---
+
+修改流程图后重新部署， 只要key不变， 它的版本号就会+1
+
+流程图查询
+---
+
+```
+RepositoryService repositoryService = this.processEngine.getRepositoryService();
+        String processDefId = "helloworld:2:27504";
+        InputStream inputStream = repositoryService.getProcessModel(processDefId);
+        try(OutputStream out = new FileOutputStream("/Users/shijiang/Desktop/helloworld.png")){
+            byte [] bytes = new byte[1024];
+            int len = 0;
+            while ((len = inputStream.read(bytes)) != -1){
+                out.write(bytes, 0 , len);
+                out.flush();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            inputStream.close();
+        }
+```
+
+
+启动顺序：key 相同， 使用最新版本启动

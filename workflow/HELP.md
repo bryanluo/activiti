@@ -175,16 +175,18 @@ select * from ACT_HI_ATTACHMENT; # 附件表
 ---
 
 classPath：
-```
+```java
+
  RepositoryService repositoryService = this.processEngine.getRepositoryService();
  Deployment deployment = repositoryService.createDeployment().name("请假流程001")
                         .addClasspathResource("activiti/helloworld.bpmn")
                         .addClasspathResource("activiti/helloworld.png")
                         .deploy();
+                        
 ```
 
 zip：
-```
+```java
 InputStream inputStream = this.getClass().getResourceAsStream("activiti/helloworld.zip");
         ZipInputStream zipInputStream = new ZipInputStream(inputStream);
         RepositoryService repositoryService = this.processEngine.getRepositoryService();
@@ -193,13 +195,12 @@ InputStream inputStream = this.getClass().getResourceAsStream("activiti/hellowor
                 .name("请假流程002")
                 .addZipInputStream(zipInputStream)
                 .deploy();
-
 ```
 
 查询：
 ---
 
-```
+```java
 RepositoryService repositoryService = this.processEngine.getRepositoryService();
 // 创建部署信息的查询
 repositoryService
@@ -225,7 +226,7 @@ repositoryService
 流程定义删除:
 ---
 
-```
+```java
 String deploymentId = "";
 RepositoryService repositoryService = this.processEngine.getRepositoryService();
 // 如果该流程定义已经启动，则删除失败，会抛出异常
@@ -243,7 +244,7 @@ repositoryService.deleteDeployment(deploymentId, true);
 流程图查询
 ---
 
-```
+```java
 RepositoryService repositoryService = this.processEngine.getRepositoryService();
         String processDefId = "helloworld:2:27504";
         InputStream inputStream = repositoryService.getProcessModel(processDefId);

@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="processEngineConfiguration" class="org.activiti.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration">
-        <property name="jdbcUrl" value="jdbc:mysql://myserver:3306/activities?useUnicode=true" />
+        <property name="jdbcUrl" value="jdbc:mysql://myserver:3306/activities?characterEncoding=utf-8" />
         <property name="jdbcDriver" value="com.mysql.cj.jdbc.Driver" />
         <property name="jdbcUsername" value="root" />
         <property name="jdbcPassword" value="server@123" />

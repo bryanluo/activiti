@@ -262,5 +262,200 @@ RepositoryService repositoryService = this.processEngine.getRepositoryService();
         }
 ```
 
+启动流程实例
+---
 
 启动顺序：key 相同， 使用最新版本启动
+
+```java
+RuntimeService runtimeService = processEngine.getRuntimeService();
+/**
+ *
+ *  processDefId:String 流程实例ID
+ *
+ *  businessId:String 业务ID 把业务ID和流程实例ID进行绑定
+ *
+ */
+// runtimeService.startProcessInstanceById(processDefId, businessId);
+/**
+ *
+ *  processDefId:String 流程实例ID
+ *
+ *  businessId:String 业务ID 把业务ID和流程实例ID进行绑定
+ *
+ *  variables:Map<String, Object> 流程变量， 决定流程的走向
+ */
+//runtimeService.startProcessInstanceById(processDefinitionId, businessKey, variables);
+// 实际开发中我们使用的是：
+String processInstanceKEy = "helloworld";
+ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processInstanceKEy);
+System.out.println("启动成功：" + processInstance.getId() + ", " + processInstance.getName());
+```
+
+
+个人任务查询：
+---
+
+```java
+    TaskService taskService = this.processEngine.getTaskService();
+    String assignee = "张三";
+    List<Task> taskList = taskService.createTaskQuery()
+    // 条件
+    .taskAssignee(assignee)
+    //.executionId(executionId)
+    //.processInstanceId(processInstanceId)
+    //.processDefinitionKey(processDefKey)
+    //.processDefinitionId(processDefId)
+    
+    // 排序
+    .orderByProcessDefinitionId().asc()
+    // 结果集
+    .list();
+    
+    
+    taskList.forEach(task -> {
+        System.out.println("任务ID：" + task.getId());
+        System.out.println("任务名称：" + task.getName());
+        System.out.println("任务实例ID：" + task.getProcessInstanceId());
+        System.out.println("流程定义ID：" + task.getProcessDefinitionId());
+        System.out.println("变量：" + task.getProcessVariables());
+    });
+```
+
+任务完成：
+---
+
+```java
+TaskService taskService = processEngine.getTaskService();
+String taskId = "30005";
+// 根据任务ID去完成任务
+taskService.complete(taskId);
+// 任务完成并指定任务变量
+//taskService.complete(taskId, Map<String, Object> variables)
+System.out.println("完成任务:" + taskId);
+```
+
+判断任务是否结束:
+---
+
+```java
+/**
+     *
+     * 判断流程是否结束
+     * 目的：
+     *  更新业务表的状态
+     */
+    @Test
+    public void isCompleteTask(){
+        RuntimeService runtimeService =this.processEngine.getRuntimeService();
+        // 已知流程实例ID
+        String processInstanceid = "";
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(processInstanceid)
+                .singleResult();
+        if(processInstance == null){
+            System.out.println("流程已经结束");
+        }else{
+            System.out.println("流程没有结束");
+        }
+        // 已知任务ID
+        // 根据任务ID查询任务实例
+        // 从任务实例里面去除流程实例
+        String taskId = "";
+        TaskService taskService  = this.processEngine.getTaskService();
+        Task task = taskService.createTaskQuery()
+                .taskId(taskId).singleResult();
+        processInstanceid = task.getProcessInstanceId();
+        processInstance = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(processInstanceid)
+                .singleResult();
+        if(processInstance == null){
+            System.out.println("流程已经结束");
+        }else{
+            System.out.println("流程没有结束");
+        }
+    }
+```
+
+
+# 流程变量 
+
+作用：  
+流程变量在整个工作流中扮演很重要的作用， 例如：请假流程中有请假天数、请假原因等一些参数都为流程变量的范围。
+流程变量的作用域范围是指对应一个流程实例。 也就是说各个流程实例的流程变量是不相互影响的。 流程实例完成后，
+流程变量还保存在数据库中（存放到流程变量历史表中）
+
+设置流程变量的值， 它的存在形式： key-value
+
+设置流程变量
+--- 
+
+```java
+/**
+     *
+     * 设置流程变量
+     *
+     */
+    @Test
+    public void setProcessVariable(){
+        // 第一种设置变量方式
+        RuntimeService runtimeService = this.processEngine.getRuntimeService();
+        String executionId = "37507";
+        runtimeService.setVariable(executionId, "test", "看下可以更新不？");
+        runtimeService.setVariable(executionId, "name", "jiang");
+        System.out.println("流程变量设置成功！");
+        // 第二种设置变量方式
+        TaskService taskService = this.processEngine.getTaskService();
+        String taskId = "";
+        taskService.setVariable(taskId, "task", "任务ID设置变量");
+
+    }
+```
+
+
+获取流程变量
+---
+
+```java
+/**
+ *
+ * 获取流程变量
+ *
+ */
+@Test
+public void getProcessVariable(){
+   String executionId = "37507";
+   RuntimeService runtimeService = processEngine.getRuntimeService();
+   Object val = runtimeService.getVariable(executionId, "test");
+    System.out.println("获取到的流程变量：" + val);
+}
+```
+
+
+# 连线
+
+流程图
+---
+
+![当前流程图](src/main/resources/activiti/SequenceFlowBPMN.png)
+
+提交申请节点：
+
+![提交申请](.HELP_images/提交申请.png)
+
+部门经理审批节点：
+
+![部门经理审批](.HELP_images/adeb40a9.png)
+
+部门经理到总经理之间的连线：
+
+![部门经理连线总经理](.HELP_images/部门经理连线总经理.png)
+
+部门经理结束：
+
+![部门经理连线结束](.HELP_images/部门经理连线结束.png)
+
+总经理审批节点：
+
+![总经理审批](.HELP_images/总经理审批.png)
+

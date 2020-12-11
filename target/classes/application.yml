@@ -15,6 +15,7 @@ spring:
     history-level: full
     db-history-used: true
 
+
 # log
 logging:
   level:

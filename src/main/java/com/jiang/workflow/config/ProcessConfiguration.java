@@ -1,17 +1,10 @@
 package com.jiang.workflow.config;
 
-import com.jiang.workflow.listener.MyEventListener;
-import org.activiti.bpmn.model.ActivitiListener;
-import org.activiti.engine.ProcessEngineConfiguration;
-import org.activiti.engine.delegate.event.ActivitiEventListener;
-import org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
 
-import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.List;
+import javax.sql.DataSource;
 
 /**
  * @author shijiang.luo
@@ -21,18 +14,11 @@ import java.util.List;
 public class ProcessConfiguration {
 
     @Bean
-    public ProcessEngineConfiguration processEngineConfiguration(ActivitiEventListener myEventListener){
-        StandaloneProcessEngineConfiguration pec = new StandaloneProcessEngineConfiguration();
-        List<ActivitiEventListener> activitiListeners =  new ArrayList<>();
-        activitiListeners.add(myEventListener);
-        pec.setEventListeners(activitiListeners);
-        return pec;
-    }
-
-    @Bean
-    public ActivitiEventListener myEventListener(){
-
-        return  new MyEventListener();
+    public SpringProcessEngineConfiguration processEngineConfiguration(DataSource dataSource){
+        SpringProcessEngineConfiguration processEngineConfiguration = new SpringProcessEngineConfiguration();
+        processEngineConfiguration.setDataSource(dataSource);
+        processEngineConfiguration.setDatabaseSchema("drop-create");
+        return processEngineConfiguration;
     }
 
 }

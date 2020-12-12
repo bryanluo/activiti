@@ -432,30 +432,3 @@ public void getProcessVariable(){
 ```
 
 
-# 连线
-
-流程图
----
-
-![当前流程图](src/main/resources/activiti/SequenceFlowBPMN.png)
-
-提交申请节点：
-
-![提交申请](.HELP_images/提交申请.png)
-
-部门经理审批节点：
-
-![部门经理审批](.HELP_images/adeb40a9.png)
-
-部门经理到总经理之间的连线：
-
-![部门经理连线总经理](.HELP_images/部门经理连线总经理.png)
-
-部门经理结束：
-
-![部门经理连线结束](.HELP_images/部门经理连线结束.png)
-
-总经理审批节点：
-
-![总经理审批](.HELP_images/总经理审批.png)
-

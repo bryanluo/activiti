@@ -17,7 +17,6 @@ public class ProcessConfiguration {
     public SpringProcessEngineConfiguration processEngineConfiguration(DataSource dataSource){
         SpringProcessEngineConfiguration processEngineConfiguration = new SpringProcessEngineConfiguration();
         processEngineConfiguration.setDataSource(dataSource);
-        processEngineConfiguration.setDatabaseSchema("drop-create");
         return processEngineConfiguration;
     }
 

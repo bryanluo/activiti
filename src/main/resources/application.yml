@@ -12,18 +12,19 @@ spring:
   activiti:
     database-schema: activities
     database-schema-update: true
-    history-level: full
     db-history-used: true
+    check-process-definitions: false
 
 # log
 logging:
   level:
-    com.jiang: INFO
+    com.jiang.workflow: DEBUG
 
 # mybatis
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true # 是否开启自动驼峰命名规则
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
   global-config:
     banner: false # 是否控制台 print mybatis-plus 的 LOGO
 

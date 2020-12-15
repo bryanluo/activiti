@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.jiang</groupId>
-    <artifactId>workflow</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>workflow</name>
-    <description>Demo project for Spring Boot</description>
+    <artifactId>springboot-activity</artifactId>
+    <version>1.0</version>
+    <name>springboot-activity</name>
+    <description>个人activity研究笔记</description>
 
     <properties>
         <java.version>1.8</java.version>

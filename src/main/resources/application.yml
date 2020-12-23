@@ -11,9 +11,9 @@ spring:
   # activity
   activiti:
     database-schema: activities
-    database-schema-update: true
+    database-schema-update: true  # strategy for database
     db-history-used: true
-    check-process-definitions: false
+    check-process-definitions: false # auto deployed
 
 # log
 logging:

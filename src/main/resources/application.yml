@@ -10,10 +10,12 @@ spring:
     url: jdbc:mysql://myserver:8505/activities?useUnicode=true&characterEncoding=utf-8&useSSL=false
   # activity
   activiti:
-    database-schema: activities
     database-schema-update: true  # strategy for database
+    check-process-definitions: false # auto deployed checked
+    rest-api-enabled: true # open activity api
+    rest-api-servlet-name: activity # swagger document
+    db-identity-used: false
     db-history-used: true
-    check-process-definitions: false # auto deployed
 
 # log
 logging:

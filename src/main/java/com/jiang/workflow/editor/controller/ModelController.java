@@ -1,4 +1,4 @@
-package com.jiang.workflow.editor;
+package com.jiang.workflow.editor.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -21,8 +21,8 @@ import javax.servlet.http.HttpServletResponse;
  * @description:
  */
 @RestController
-@RequestMapping("activity")
-public class ActivityController {
+@RequestMapping("model")
+public class ModelController {
 
     private HttpServletRequest request;
     private HttpServletResponse response;

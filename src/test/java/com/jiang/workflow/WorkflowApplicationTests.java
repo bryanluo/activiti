@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 @SpringBootTest
-class WorkflowApplicationTests {
+public class WorkflowApplicationTests {
 
 	@Autowired
 	protected RepositoryService repositoryService;

@@ -1,5 +1,6 @@
 package com.jiang.workflow;
 
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -17,6 +18,8 @@ public class WorkflowApplicationTests {
 
 	@Autowired
 	protected RepositoryService repositoryService;
+	@Autowired
+	protected HistoryService historyService;
 	@Autowired
 	protected RuntimeService runtimeService;
 	@Autowired

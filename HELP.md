@@ -175,7 +175,7 @@ select * from ACT_HI_ATTACHMENT; # 附件表
 ---
 
 classPath：
-```java
+```
 
  RepositoryService repositoryService = this.processEngine.getRepositoryService();
  Deployment deployment = repositoryService.createDeployment().name("请假流程001")
@@ -186,7 +186,7 @@ classPath：
 ```
 
 zip：
-```java
+```
 InputStream inputStream = this.getClass().getResourceAsStream("activiti/helloworld.zip");
         ZipInputStream zipInputStream = new ZipInputStream(inputStream);
         RepositoryService repositoryService = this.processEngine.getRepositoryService();
@@ -200,7 +200,7 @@ InputStream inputStream = this.getClass().getResourceAsStream("activiti/hellowor
 查询：
 ---
 
-```java
+```
 RepositoryService repositoryService = this.processEngine.getRepositoryService();
 // 创建部署信息的查询
 repositoryService
@@ -226,7 +226,7 @@ repositoryService
 流程定义删除:
 ---
 
-```java
+```
 String deploymentId = "";
 RepositoryService repositoryService = this.processEngine.getRepositoryService();
 // 如果该流程定义已经启动，则删除失败，会抛出异常
@@ -244,7 +244,7 @@ repositoryService.deleteDeployment(deploymentId, true);
 流程图查询
 ---
 
-```java
+```
 RepositoryService repositoryService = this.processEngine.getRepositoryService();
         String processDefId = "helloworld:2:27504";
         InputStream inputStream = repositoryService.getProcessModel(processDefId);
@@ -267,7 +267,7 @@ RepositoryService repositoryService = this.processEngine.getRepositoryService();
 
 启动顺序：key 相同， 使用最新版本启动
 
-```java
+```
 RuntimeService runtimeService = processEngine.getRuntimeService();
 /**
  *
@@ -296,7 +296,7 @@ System.out.println("启动成功：" + processInstance.getId() + ", " + processI
 个人任务查询：
 ---
 
-```java
+```
     TaskService taskService = this.processEngine.getTaskService();
     String assignee = "张三";
     List<Task> taskList = taskService.createTaskQuery()
@@ -325,7 +325,7 @@ System.out.println("启动成功：" + processInstance.getId() + ", " + processI
 任务完成：
 ---
 
-```java
+```
 TaskService taskService = processEngine.getTaskService();
 String taskId = "30005";
 // 根据任务ID去完成任务
@@ -339,6 +339,7 @@ System.out.println("完成任务:" + taskId);
 ---
 
 ```java
+class Demo{
 /**
      *
      * 判断流程是否结束
@@ -375,6 +376,7 @@ System.out.println("完成任务:" + taskId);
             System.out.println("流程没有结束");
         }
     }
+}
 ```
 
 
@@ -391,6 +393,7 @@ System.out.println("完成任务:" + taskId);
 --- 
 
 ```java
+class Demo{
 /**
      *
      * 设置流程变量
@@ -410,6 +413,7 @@ System.out.println("完成任务:" + taskId);
         taskService.setVariable(taskId, "task", "任务ID设置变量");
 
     }
+}
 ```
 
 
@@ -417,6 +421,7 @@ System.out.println("完成任务:" + taskId);
 ---
 
 ```java
+class Demo{
 /**
  *
  * 获取流程变量
@@ -428,6 +433,74 @@ public void getProcessVariable(){
    RuntimeService runtimeService = processEngine.getRuntimeService();
    Object val = runtimeService.getVariable(executionId, "test");
     System.out.println("获取到的流程变量：" + val);
+}
+
+}
+```
+
+
+
+
+activiti5.X生成流程图代码
+```java
+
+class BuildDiagram{
+/**
+ * 根据流程实例Id,获取实时流程图片
+ * 
+ * @param processInstanceId
+ * @return
+ */
+public static InputStream getFlowImgByInstantId(String processInstanceId) {
+	if (StringUtils.isEmpty(processInstanceId)) {
+		return null;
+	}
+	// 获取流程图输入流
+	InputStream inputStream = null;
+	// 查询历史
+	HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+	if (historicProcessInstance.getEndTime() != null) { // 该流程已经结束
+		ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(historicProcessInstance.getProcessDefinitionId())
+				.singleResult();
+		inputStream = repositoryService.getResourceAsStream(processDefinition.getDeploymentId(), processDefinition.getDiagramResourceName());
+	} else {
+		// 查询当前的流程实例
+		ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+		BpmnModel bpmnModel = repositoryService.getBpmnModel(processInstance.getProcessDefinitionId());
+		ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity) repositoryService.createProcessDefinitionQuery()
+				.processDefinitionId(processInstance.getProcessDefinitionId()).singleResult();
+		List<String> highLightedFlows = new ArrayList<String>();
+		List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId)
+				.orderByHistoricActivityInstanceStartTime().asc().list();
+		List<String> historicActivityInstanceList = new ArrayList<String>();
+		for (HistoricActivityInstance hai : historicActivityInstances) {
+			historicActivityInstanceList.add(hai.getActivityId());
+		}
+		List<String> highLightedActivities = runtimeService.getActiveActivityIds(processInstanceId);
+		historicActivityInstanceList.addAll(highLightedActivities);
+		for (ActivityImpl activity : processDefinitionEntity.getActivities()) {
+			int index = historicActivityInstanceList.indexOf(activity.getId());
+			if (index >= 0 && index + 1 < historicActivityInstanceList.size()) {
+				List<PvmTransition> pvmTransitionList = activity.getOutgoingTransitions();
+				for (PvmTransition pvmTransition : pvmTransitionList) {
+					String destinationFlowId = pvmTransition.getDestination().getId();
+					if (destinationFlowId.equals(historicActivityInstanceList.get(index + 1))) {
+						highLightedFlows.add(pvmTransition.getId());
+					}
+				}
+			}
+		}
+		ProcessDiagramGenerator diagramGenerator = processEngineConfiguration.getProcessDiagramGenerator();
+		List<String> activeActivityIds = new ArrayList<String>();
+		List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstanceId).list();
+		for (org.activiti.engine.task.Task task : tasks) {
+			activeActivityIds.add(task.getTaskDefinitionKey());
+		}
+		inputStream = diagramGenerator.generateDiagram(bpmnModel, "png", activeActivityIds, highLightedFlows, "宋体", "宋体", null, null, 1.0);
+	}
+	return inputStream;
+}
+
 }
 ```
 

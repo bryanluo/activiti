@@ -1,4 +1,4 @@
-package com.jiang.workflow.config;
+package com.jiang.workflow.common.config;
 
 import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.springframework.beans.factory.annotation.Configurable;

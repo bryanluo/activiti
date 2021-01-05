@@ -1,4 +1,4 @@
-package com.jiang.workflow.editor.controller;
+package com.jiang.workflow.design.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

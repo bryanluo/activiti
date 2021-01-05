@@ -11,7 +11,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 
 
-@MapperScan("com.jiang.workflow.domain.repository")
+@MapperScan("com.jiang.workflow.**.repository")
 @SpringBootApplication(exclude = {
         org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
         org.activiti.spring.boot.SecurityAutoConfiguration.class

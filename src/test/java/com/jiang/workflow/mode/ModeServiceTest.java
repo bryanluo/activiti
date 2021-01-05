@@ -34,9 +34,7 @@ import java.util.*;
 /**
  * @author Bryan.luo
  * @Date 2021/1/3 星期日
- * @description
- *
- * 在线绘制流程以后这里从创建到执行流程的具体步骤
+ * @description 在线绘制流程以后这里从创建到执行流程的具体步骤
  **/
 @Slf4j
 public class ModeServiceTest extends WorkflowApplicationTests {
@@ -53,15 +51,15 @@ public class ModeServiceTest extends WorkflowApplicationTests {
     public void deploy() throws IOException {
         String modeId = "2503";
         Model mode = repositoryService.getModel(modeId);
-        byte [] bytes = repositoryService.getModelEditorSource(mode.getId());
+        byte[] bytes = repositoryService.getModelEditorSource(mode.getId());
         Optional.ofNullable(bytes).orElseThrow(() -> new UserFriendlyException("模型数据为空，请添加流程模型"));
         // 将 byte[] 转换为 xml
         JsonNode modeNode = new ObjectMapper().readTree(bytes);
         BpmnModel bpmnModel = new BpmnJsonConverter().convertToBpmnModel(modeNode);
-        if(bpmnModel.getProcesses().size() == 0){
+        if (bpmnModel.getProcesses().size() == 0) {
             throw new UserFriendlyException("数据模型不符要求，请至少设计一条主线流程");
         }
-        byte [] bpmnBytes = new BpmnXMLConverter().convertToXML(bpmnModel);
+        byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(bpmnModel);
 
         // 发布流程
         String processName = mode.getName().concat(".bpmn20.xml");
@@ -79,7 +77,7 @@ public class ModeServiceTest extends WorkflowApplicationTests {
      * 启动流程实例
      */
     @Test
-    public void startProcessInstance(){
+    public void startProcessInstance() {
         String key = "holiday";
         // 这里设置全局变量
         Map<String, Object> variables = new HashMap<>();
@@ -93,7 +91,7 @@ public class ModeServiceTest extends WorkflowApplicationTests {
      * 完成当前任务
      */
     @Test
-    public void complete(){
+    public void complete() {
         String assignee = "wangwu";
         Task task = taskService.createTaskQuery().taskAssignee(assignee).singleResult();
         Optional.ofNullable(task).orElseThrow(() -> new UserFriendlyException("当前任务不存在"));
@@ -108,7 +106,7 @@ public class ModeServiceTest extends WorkflowApplicationTests {
      * 查询模型列表
      */
     @Test
-    public void list(){
+    public void list() {
         List<Model> modelList = repositoryService.createModelQuery()
                 .listPage(0, 10);
         modelList.forEach(model -> log.info("id: {}, name:{}", model.getId(), model.getName()));
@@ -118,7 +116,7 @@ public class ModeServiceTest extends WorkflowApplicationTests {
      * 生成流程图
      */
     @Test
-    public void queryProcessDiagram() throws IOException{
+    public void queryProcessDiagram() throws IOException {
         // 1、获取历史流程实例
         String processInstanceId = "7501";
         HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
@@ -132,10 +130,10 @@ public class ModeServiceTest extends WorkflowApplicationTests {
         // 3、绘制图
         BufferedImage bufferedImage = ImageIO.read(processDiagramIs);
         File file = new File("workflow.png");
-        if(!file.exists()){
+        if (!file.exists()) {
             file.createNewFile();
         }
-        try (FileOutputStream fileOutputStream = new FileOutputStream(file)){
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             ImageIO.write(bufferedImage, "png", fileOutputStream);
             processDiagramIs.close();
             log.info("图片生成成功: {}", file.getAbsolutePath());
@@ -146,7 +144,7 @@ public class ModeServiceTest extends WorkflowApplicationTests {
      * 流程图高亮显示
      */
     @Test
-    public void heightLightDiagram() throws IOException{
+    public void heightLightDiagram() throws IOException {
         String processInstanceId = "7501";
 
         // 获取历史流程实例
@@ -154,7 +152,7 @@ public class ModeServiceTest extends WorkflowApplicationTests {
                 .processInstanceId(processInstanceId)
                 .singleResult();
 
-        Optional.ofNullable(historicProcessInstance).orElseThrow(()->
+        Optional.ofNullable(historicProcessInstance).orElseThrow(() ->
                 new UserFriendlyException("流程实例不存在, processInstanceId=" + processInstanceId));
 
         // 获取流程中已经执行的节点，按照执行先后顺序排序
@@ -176,9 +174,9 @@ public class ModeServiceTest extends WorkflowApplicationTests {
 
         // 如果还没完成，流程图高亮颜色为绿色，如果已经完成为红色
         ProcessDiagramGenerator processDiagramGenerator = null;
-        if(CollectionUtils.isEmpty(historicProcessInstanceFinishedList)){
+        if (CollectionUtils.isEmpty(historicProcessInstanceFinishedList)) {
             processDiagramGenerator = new DefaultProcessDiagramGenerator();
-        }else{
+        } else {
             processDiagramGenerator = processEngineConfiguration.getProcessDiagramGenerator();
         }
 
@@ -190,11 +188,11 @@ public class ModeServiceTest extends WorkflowApplicationTests {
 
 
         File file = new File("heightLightDiagram.png");
-        if(!file.exists()){
+        if (!file.exists()) {
             file.createNewFile();
         }
 
-        try(FileOutputStream outputStream = new FileOutputStream(file)){
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
             // 输出图片内容
             byte[] b = new byte[1024];
             int len;

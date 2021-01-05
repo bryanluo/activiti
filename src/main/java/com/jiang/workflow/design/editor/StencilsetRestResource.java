@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jiang.workflow.editor;
+package com.jiang.workflow.design.editor;
 
 import org.activiti.engine.ActivitiException;
 import org.apache.commons.io.IOUtils;
